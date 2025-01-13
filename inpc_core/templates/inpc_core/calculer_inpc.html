@@ -1,0 +1,55 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Calcul de l'Indice National des Prix à la Consommation (INPC)</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <h3>INPC par Groupe de Produits</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Année</th>
+                        <th>Mois</th>
+                        <th>Groupe</th>
+                        <th>INPC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inpc_par_groupe %}
+                    <tr>
+                        <td>{{ item.Année }}</td>
+                        <td>{{ item.Mois }}</td>
+                        <td>{{ item.Groupe }}</td>
+                        <td>{{ item.INPC|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="col-md-6">
+            <h3>INPC Global</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Année</th>
+                        <th>Mois</th>
+                        <th>INPC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in inpc_global.items %}
+                    <tr>
+                        <td>{{ key.0 }}</td>
+                        <td>{{ key.1 }}</td>
+                        <td>{{ value|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

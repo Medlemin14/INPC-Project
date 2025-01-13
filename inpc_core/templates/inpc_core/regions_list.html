@@ -1,0 +1,30 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10">
+        <h2>Régions</h2>
+        <a href="{% url 'regions_new' %}" class="btn btn-primary mb-3">Ajouter une Région</a>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom de la Région</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>
+                    <td>{{ object.nom_region }}</td>
+                    <td>
+                        <a href="{% url 'regions_edit' object.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                        <a href="{% url 'regions_delete' object.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

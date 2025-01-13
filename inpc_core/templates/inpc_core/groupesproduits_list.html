@@ -1,0 +1,30 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10">
+        <h2>Groupes de Produits</h2>
+        <a href="{% url 'groupesproduits_new' %}" class="btn btn-primary mb-3">Ajouter un Groupe</a>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom du Groupe</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>
+                    <td>{{ object.nom_group }}</td>
+                    <td>
+                        <a href="{% url 'groupesproduits_edit' object.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                        <a href="{% url 'groupesproduits_delete' object.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron text-center">
+        <h1>Système de Calcul de l'INPC</h1>
+        <p>Bienvenue sur l'application de calcul de l'Indice National des Prix à la Consommation</p>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <a href="{% url 'groupesproduits_list' %}" class="btn btn-primary btn-lg">Groupes de Produits</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'calculer_inpc' %}" class="btn btn-success btn-lg">Calculer INPC</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'excel_import' %}" class="btn btn-info btn-lg">Importer des Données</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
