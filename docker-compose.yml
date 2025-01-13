@@ -1,43 +1,39 @@
-services:
-  djangoapp:
-    build:
-      context: .
-    container_name: inpc_djangoapp
-    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/app
-    working_dir: /app
-    ports:
-      - "127.0.0.1:8000:8000"
-    depends_on:
-      inpc_mydb:
-        condition: service_healthy
-    environment:
-      - DJANGO_SETTINGS_MODULE=inpc_project.settings
-      - DB_HOST=inpc_mydb
-      - DB_PORT=3307
-      - DB_NAME=inpc_db
-      - DB_USER=root
-      - DB_PASSWORD=Medlemin23014
+version: '3.8'
 
-  inpc_mydb:
+services:
+  db:
     image: mysql:8.0
-    container_name: inpc_mydb
-    restart: always
+    container_name: inpc_mysql
     environment:
       MYSQL_ROOT_PASSWORD: Medlemin23014
       MYSQL_DATABASE: inpc_db
     ports:
-      - "127.0.0.1:33307:3307"
+      - "24014:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    command: --port=3307 --default-authentication-plugin=mysql_native_password
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pMedlemin23014"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+    command: --sql_mode=STRICT_TRANS_TABLES
+
+  djangoapp:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: inpc_django
+    command: python manage.py runserver 0.0.0.0:23014
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+    ports:
+      - "23014:23014"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=inpc_project.settings
+      - DB_NAME=inpc_db
+      - DB_USER=root
+      - DB_PASSWORD=Medlemin23014
+      - DATABASE_HOST=db
+      - DATABASE_PORT=3306
 
 volumes:
   mysql_data:
+  static_volume:

@@ -1,0 +1,34 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10">
+        <h2>Communes</h2>
+        <a href="{% url 'commune_create' %}" class="btn btn-primary mb-3">Ajouter une Commune</a>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Nom</th>
+                    <th>Moughataa</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for commune in object_list %}
+                <tr>
+                    <td>{{ commune.code }}</td>
+                    <td>{{ commune.name }}</td>
+                    <td>{{ commune.moughataa.label }}</td>
+                    <td>
+                        <a href="{% url 'commune_update' commune.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                        <a href="{% url 'commune_delete' commune.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

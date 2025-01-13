@@ -1,0 +1,40 @@
+TP SID32
+Projet Phase 1
+Sidi BIHA
+2024-2025
+Vous devez soumettre un fichier PDF contenant les captures d’écran des pages
+CRUD de votre application. De plus, il est impératif de fournir le lien vers votre
+projet hébergé sur GitHub.
+Contexte du projet
+L’ANSADE souhaite migrer l’application qu’elle utilise pour stocker les données
+collectées périodiquement en vue de calculer l’Indice National des Prix à la
+Consommation (INPC). Dans cette première étape, nous développerons une
+application Django permettant de réaliser les opérations CRUD pour les tables
+suivantes :
+• Structures administratives : Wilaya, moughataa, commune.
+• Produits : Les produits pour lesquels nous calculerons l’indice des prix.
+• Panier de produits : Un ensemble de produits.
+• Points de vente : Lieux où les produits sont vendus, avec un prix associé
+à une date précise.
+• Relations entre les tables :
+– Un panier de produits est composé de plusieurs produits, et chaque
+produit est associé à une pondération utilisée dans le calcul de l’indice
+des prix. Cette pondération peut évoluer dans le temps.
+– Un point de vente doit être associé à une structure administrative et
+doit inclure des coordonnées GPS.
+– Un produit est vendu dans un point de vente à un prix spécifique et
+à une date déterminée.
+Cette application constituera le noyau fondamental permettant à l’ANSADE
+de gérer les données nécessaires au calcul de l’INPC.
+1
+Contraintes techniques
+• Le code doit être publié sur votre compte GitHub.
+• L’application doit utiliser Bootstrap.
+• L’application doit comporter un menu de navigation avec les entrées suivantes : Prix, Panier et Configurations, comprenant un sous-menu contenant les fonctionnalités CRUD pour la gestion des points de vente, des
+produits et des structures administratives.
+• Vous devez utiliser un fichier docker-compose pour configurer votre application Django.
+• Votre configuration Docker doit exposer :
+– L’application Django sur un port correspondant à votre matricule.
+– La base de données sur un port correspondant à votre matricule +
+1000.
+2

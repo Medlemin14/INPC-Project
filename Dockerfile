@@ -1,20 +1,28 @@
-# Use the official Python image as the base
-FROM python:3.12
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
 
-# Set the working directory inside the container
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set work directory
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt /app/requirements.txt
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    build-essential \
+    pkg-config \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install the necessary dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy requirements and install Python dependencies
+COPY requirements.txt /app/
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project
-COPY . /app
+# Copy project files
+COPY . /app/
 
-# Expose the port the app runs on
-EXPOSE 8000
-
-# Set the default command to run the Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Expose port
+EXPOSE 23014

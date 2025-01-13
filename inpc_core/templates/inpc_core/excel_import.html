@@ -1,31 +1,87 @@
 {% extends 'inpc_core/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h2>Importer des Données Excel</h2>
-        
-        {% if messages %}
-            {% for message in messages %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Importation de Données</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="alert alert-info mt-3">
+                            <strong>Instructions d'Importation:</strong>
+                            <ul>
+                                <li>Choisissez le type de données à importer</li>
+                                <li>Sélectionnez un fichier Excel (.xlsx ou .xls)</li>
+                                <li>Assurez-vous que le fichier respecte le format requis</li>
+                                <li>Les colonnes doivent correspondre exactement aux champs du modèle</li>
+                                <li>La première ligne doit contenir les en-têtes des colonnes</li>
+                            </ul>
+                            <p class="mb-0">
+                                <a href="#" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#importFormatModal">
+                                    Voir les Formats d'Importation
+                                </a>
+                            </p>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Importer</button>
+                    </form>
+                </div>
+            </div>
+            
+            {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
                 <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
                     {{ message }}
                 </div>
-            {% endfor %}
-        {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="mb-3">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="text-danger">{{ field.errors }}</div>
-                    {% endif %}
+    <!-- Modal for Import Formats -->
+    <div class="modal fade" id="importFormatModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Formats d'Importation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary">Importer</button>
-        </form>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Type de Données</th>
+                                <th>Colonnes Requises</th>
+                                <th>Exemple</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Types de Produits</td>
+                                <td>code, label</td>
+                                <td>PT001, Alimentation</td>
+                            </tr>
+                            <tr>
+                                <td>Produits des Paniers</td>
+                                <td>cart_code, product_code, weighting, date_from, date_to</td>
+                                <td>CART001, P001, 60.0, 2025-01-01, 2025-12-31</td>
+                            </tr>
+                            <!-- Add more rows for other data types -->
+                        </tbody>
+                    </table>
+                    <p>
+                        <strong>Conseil:</strong> Téléchargez et utilisez nos fichiers modèles pour chaque type de données.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -2,38 +2,60 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    
-    # URLs pour GroupsProduits
-    path('groupesproduits/', views.GroupsProduitsListView.as_view(), name='groupesproduits_list'),
-    path('groupesproduits/new/', views.GroupsProduitsCreateView.as_view(), name='groupesproduits_new'),
-    path('groupesproduits/edit/<int:pk>/', views.GroupsProduitsUpdateView.as_view(), name='groupesproduits_edit'),
-    path('groupesproduits/delete/<int:pk>/', views.GroupsProduitsDeleteView.as_view(), name='groupesproduits_delete'),
-    
-    # URLs pour Régions
-    path('regions/', views.RegionsListView.as_view(), name='regions_list'),
-    path('regions/new/', views.RegionsCreateView.as_view(), name='regions_new'),
-    path('regions/edit/<int:pk>/', views.RegionsUpdateView.as_view(), name='regions_edit'),
-    path('regions/delete/<int:pk>/', views.RegionsDeleteView.as_view(), name='regions_delete'),
-    
-    # URLs pour Points de Ventes
-    path('pointsdeventes/', views.PointsDeVentesListView.as_view(), name='pointsdeventes_list'),
-    path('pointsdeventes/new/', views.PointsDeVentesCreateView.as_view(), name='pointsdeventes_new'),
-    path('pointsdeventes/edit/<int:pk>/', views.PointsDeVentesUpdateView.as_view(), name='pointsdeventes_edit'),
-    path('pointsdeventes/delete/<int:pk>/', views.PointsDeVentesDeleteView.as_view(), name='pointsdeventes_delete'),
-    
-    # URLs pour Produits
-    path('produits/', views.ProduitsListView.as_view(), name='produits_list'),
-    path('produits/new/', views.ProduitsCreateView.as_view(), name='produits_new'),
-    path('produits/edit/<int:pk>/', views.ProduitsUpdateView.as_view(), name='produits_edit'),
-    path('produits/delete/<int:pk>/', views.ProduitsDeleteView.as_view(), name='produits_delete'),
-    
-    # URLs pour Prix
-    path('prix/', views.PrixListView.as_view(), name='prix_list'),
-    path('prix/new/', views.PrixCreateView.as_view(), name='prix_new'),
-    path('prix/edit/<int:pk>/', views.PrixUpdateView.as_view(), name='prix_edit'),
-    path('prix/delete/<int:pk>/', views.PrixDeleteView.as_view(), name='prix_delete'),
-    
+    # Product Type URLs
+    path('product-type/', views.ProductTypeListView.as_view(), name='product_type_list'),
+    path('product-type/create/', views.ProductTypeCreateView.as_view(), name='product_type_create'),
+    path('product-type/<int:pk>/update/', views.ProductTypeUpdateView.as_view(), name='product_type_update'),
+    path('product-type/<int:pk>/delete/', views.ProductTypeDeleteView.as_view(), name='product_type_delete'),
+
+    # Product URLs
+    path('product/', views.ProductListView.as_view(), name='product_list'),
+    path('product/create/', views.ProductCreateView.as_view(), name='product_create'),
+    path('product/<int:pk>/update/', views.ProductUpdateView.as_view(), name='product_update'),
+    path('product/<int:pk>/delete/', views.ProductDeleteView.as_view(), name='product_delete'),
+
+    # Wilaya URLs
+    path('wilaya/', views.WilayaListView.as_view(), name='wilaya_list'),
+    path('wilaya/create/', views.WilayaCreateView.as_view(), name='wilaya_create'),
+    path('wilaya/<int:pk>/update/', views.WilayaUpdateView.as_view(), name='wilaya_update'),
+    path('wilaya/<int:pk>/delete/', views.WilayaDeleteView.as_view(), name='wilaya_delete'),
+
+    # Moughataa URLs
+    path('moughataa/', views.MoughataaListView.as_view(), name='moughataa_list'),
+    path('moughataa/create/', views.MoughataaCreateView.as_view(), name='moughataa_create'),
+    path('moughataa/<int:pk>/update/', views.MoughataaUpdateView.as_view(), name='moughataa_update'),
+    path('moughataa/<int:pk>/delete/', views.MoughataaDeleteView.as_view(), name='moughataa_delete'),
+
+    # Commune URLs
+    path('commune/', views.CommuneListView.as_view(), name='commune_list'),
+    path('commune/create/', views.CommuneCreateView.as_view(), name='commune_create'),
+    path('commune/<int:pk>/update/', views.CommuneUpdateView.as_view(), name='commune_update'),
+    path('commune/<int:pk>/delete/', views.CommuneDeleteView.as_view(), name='commune_delete'),
+
+    # Point of Sale URLs
+    path('point-of-sale/', views.PointOfSaleListView.as_view(), name='point_of_sale_list'),
+    path('point-of-sale/create/', views.PointOfSaleCreateView.as_view(), name='point_of_sale_create'),
+    path('point-of-sale/<int:pk>/update/', views.PointOfSaleUpdateView.as_view(), name='point_of_sale_update'),
+    path('point-of-sale/<int:pk>/delete/', views.PointOfSaleDeleteView.as_view(), name='point_of_sale_delete'),
+
+    # Product Price URLs
+    path('product-price/', views.ProductPriceListView.as_view(), name='product_price_list'),
+    path('product-price/create/', views.ProductPriceCreateView.as_view(), name='product_price_create'),
+    path('product-price/<int:pk>/update/', views.ProductPriceUpdateView.as_view(), name='product_price_update'),
+    path('product-price/<int:pk>/delete/', views.ProductPriceDeleteView.as_view(), name='product_price_delete'),
+
+    # Cart URLs
+    path('cart/', views.CartListView.as_view(), name='cart_list'),
+    path('cart/create/', views.CartCreateView.as_view(), name='cart_create'),
+    path('cart/<int:pk>/update/', views.CartUpdateView.as_view(), name='cart_update'),
+    path('cart/<int:pk>/delete/', views.CartDeleteView.as_view(), name='cart_delete'),
+
+    # Cart Product URLs
+    path('cart-product/', views.CartProductListView.as_view(), name='cart_product_list'),
+    path('cart-product/create/', views.CartProductCreateView.as_view(), name='cart_product_create'),
+    path('cart-product/<int:pk>/', views.CartProductDetailView.as_view(), name='cart_product_detail'),
+    path('cart-product/<int:pk>/update/', views.CartProductUpdateView.as_view(), name='cart_product_update'),
+    path('cart-product/<int:pk>/delete/', views.CartProductDeleteView.as_view(), name='cart_product_delete'),
     # URL pour le calcul de l'INPC
     path('calculer-inpc/', views.calculer_inpc, name='calculer_inpc'),
 

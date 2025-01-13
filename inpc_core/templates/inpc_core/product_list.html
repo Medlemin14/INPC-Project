@@ -4,26 +4,26 @@
 <div class="row">
     <div class="col-md-10">
         <h2>Produits</h2>
-        <a href="{% url 'produits_new' %}" class="btn btn-primary mb-3">Ajouter un Produit</a>
+        <a href="{% url 'product_create' %}" class="btn btn-primary mb-3">Ajouter un Produit</a>
         
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Nom du Produit</th>
-                    <th>Groupe de Produits</th>
-                    <th>Pondération</th>
+                    <th>Type de Produit</th>
+                    <th>Description</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
                 <tr>
-                    <td>{{ object.nom_produit }}</td>
-                    <td>{{ object.groupe_produit.nom_group }}</td>
-                    <td>{{ object.ponderation }}</td>
+                    <td>{{ object.name }}</td>
+                    <td>{{ object.product_type }}</td>
+                    <td>{{ object.description }}</td>
                     <td>
-                        <a href="{% url 'produits_edit' object.pk %}" class="btn btn-sm btn-warning">Modifier</a>
-                        <a href="{% url 'produits_delete' object.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+                        <a href="{% url 'product_update' object.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                        <a href="{% url 'product_delete' object.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
                     </td>
                 </tr>
                 {% endfor %}

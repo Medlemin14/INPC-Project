@@ -1,0 +1,70 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2>Produits des Paniers</h2>
+                    <a href="{% url 'cart_product_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter un Produit de Panier
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if cart_products %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Panier</th>
+                                        <th>Produit</th>
+                                        <th>Pondération (%)</th>
+                                        <th>Période</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cart_product in cart_products %}
+                                    <tr>
+                                        <td>{{ cart_product.cart.name }}</td>
+                                        <td>{{ cart_product.product.name }}</td>
+                                        <td>{{ cart_product.weighting }}%</td>
+                                        <td>
+                                            {{ cart_product.date_from }} 
+                                            {% if cart_product.date_to %}
+                                                - {{ cart_product.date_to }}
+                                            {% else %}
+                                                (Actuel)
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'cart_product_detail' cart_product.pk %}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'cart_product_update' cart_product.pk %}" class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'cart_product_delete' cart_product.pk %}" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Aucun produit de panier n'a été trouvé. 
+                            <a href="{% url 'cart_product_create' %}" class="alert-link">Créez-en un maintenant</a>.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

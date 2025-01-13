@@ -1,0 +1,34 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10">
+        <h2>Paniers</h2>
+        <a href="{% url 'cart_create' %}" class="btn btn-primary mb-3">Créer un Panier</a>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cart in object_list %}
+                <tr>
+                    <td>{{ cart.code }}</td>
+                    <td>{{ cart.name }}</td>
+                    <td>{{ cart.description|default:'-' }}</td>
+                    <td>
+                        <a href="{% url 'cart_update' cart.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                        <a href="{% url 'cart_delete' cart.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

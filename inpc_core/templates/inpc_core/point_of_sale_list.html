@@ -1,0 +1,36 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10">
+        <h2>Points de Vente</h2>
+        <a href="{% url 'point_of_sale_create' %}" class="btn btn-primary mb-3">Ajouter un Point de Vente</a>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Type</th>
+                    <th>Commune</th>
+                    <th>Coordonnées GPS</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for point in object_list %}
+                <tr>
+                    <td>{{ point.code }}</td>
+                    <td>{{ point.get_type_display }}</td>
+                    <td>{{ point.commune.name }}</td>
+                    <td>{{ point.gps_lat }}, {{ point.gps_lon }}</td>
+                    <td>
+                        <a href="{% url 'point_of_sale_update' point.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                        <a href="{% url 'point_of_sale_delete' point.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

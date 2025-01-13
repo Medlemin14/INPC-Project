@@ -1,0 +1,32 @@
+{% extends 'inpc_core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10">
+        <h2>Types de Produits</h2>
+        <a href="{% url 'product_type_create' %}" class="btn btn-primary mb-3">Ajouter un Type de Produit</a>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Libellé</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>
+                    <td>{{ object.code }}</td>
+                    <td>{{ object.label }}</td>
+                    <td>
+                        <a href="{% url 'product_type_update' object.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                        <a href="{% url 'product_type_delete' object.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,19 +1,43 @@
-{% extends 'inpc_core/base.html' %}
+{% extends "inpc_core/base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-5">
     <div class="jumbotron text-center">
-        <h1>Système de Calcul de l'INPC</h1>
-        <p>Bienvenue sur l'application de calcul de l'Indice National des Prix à la Consommation</p>
+        <h1 class="display-4">Système de Calcul de l'INPC</h1>
+        <p class="lead">Bienvenue sur l'application de calcul de l'Indice National des Prix à la Consommation</p>
+        
         <div class="row mt-4">
             <div class="col-md-4">
-                <a href="{% url 'groupesproduits_list' %}" class="btn btn-primary btn-lg">Groupes de Produits</a>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Prix</h5>
+                        <p class="card-text">Gérez les prix des produits dans différents points de vente.</p>
+                        <a href="{% url 'product_price_list' %}" class="btn btn-primary">Gérer les Prix</a>
+                    </div>
+                </div>
             </div>
+            
             <div class="col-md-4">
-                <a href="{% url 'calculer_inpc' %}" class="btn btn-success btn-lg">Calculer INPC</a>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Panier</h5>
+                        <p class="card-text">Configurez et gérez les paniers de produits pour le calcul de l'INPC.</p>
+                        <a href="{% url 'cart_list' %}" class="btn btn-primary">Gérer les Paniers</a>
+                    </div>
+                </div>
             </div>
+            
             <div class="col-md-4">
-                <a href="{% url 'excel_import' %}" class="btn btn-info btn-lg">Importer des Données</a>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Configurations</h5>
+                        <p class="card-text">Configurez les structures administratives, produits et points de vente.</p>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'point_of_sale_list' %}" class="btn btn-primary">Points de Vente</a>
+                            <a href="{% url 'product_list' %}" class="btn btn-primary">Produits</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

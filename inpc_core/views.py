@@ -1,261 +1,372 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.shortcuts import render
+from django.views.generic import (
+    ListView, CreateView, UpdateView, DeleteView, DetailView
+)
 from django.urls import reverse_lazy
-from .models import GroupsProduits, Regions, PointsDeVentes, Produits, Prix
-from .forms import (GroupsProduitsForm, RegionsForm, PointsDeVentesForm, 
-                    ProduitsForm, PrixForm)
-import pandas as pd
-import numpy as np
-from django.contrib import messages
-from django.views.generic import FormView
-from .forms import ExcelImportForm
+from .models import (
+    ProductType, Product, Wilaya, Moughataa, Commune, 
+    PointOfSale, ProductPrice, Cart, CartProduct
+)
+from .forms import (
+    ProductTypeForm, ProductForm, WilayaForm, MoughataaForm, 
+    CommuneForm, PointOfSaleForm, ProductPriceForm, 
+    CartForm, CartProductForm
+)
 
-from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+# Product Type Views
+class ProductTypeListView(ListView):
+    model = ProductType
+    template_name = 'inpc_core/product_type_list.html'
+    context_object_name = 'product_types'
 
-# Vues pour GroupsProduits
-class GroupsProduitsCreateView(CreateView):
-    model = GroupsProduits
-    form_class = GroupsProduitsForm
-    template_name = 'inpc_core/groupesproduits_form.html'
-    success_url = reverse_lazy('groupesproduits_list')
+class ProductTypeCreateView(CreateView):
+    model = ProductType
+    form_class = ProductTypeForm
+    template_name = 'inpc_core/product_type_form.html'
+    success_url = reverse_lazy('product_type_list')
 
-class GroupsProduitsUpdateView(UpdateView):
-    model = GroupsProduits
-    form_class = GroupsProduitsForm
-    template_name = 'inpc_core/groupesproduits_form.html'
-    success_url = reverse_lazy('groupesproduits_list')
+class ProductTypeUpdateView(UpdateView):
+    model = ProductType
+    form_class = ProductTypeForm
+    template_name = 'inpc_core/product_type_form.html'
+    success_url = reverse_lazy('product_type_list')
 
-class GroupsProduitsDeleteView(DeleteView):
-    model = GroupsProduits
+class ProductTypeDeleteView(DeleteView):
+    model = ProductType
     template_name = 'inpc_core/confirm_delete.html'
-    success_url = reverse_lazy('groupesproduits_list')
+    success_url = reverse_lazy('product_type_list')
 
-# Vues pour Regions
-class RegionsCreateView(CreateView):
-    model = Regions
-    form_class = RegionsForm
-    template_name = 'inpc_core/regions_form.html'
-    success_url = reverse_lazy('regions_list')
+# Product Views
+class ProductListView(ListView):
+    model = Product
+    template_name = 'inpc_core/product_list.html'
+    context_object_name = 'products'
 
-class RegionsUpdateView(UpdateView):
-    model = Regions
-    form_class = RegionsForm
-    template_name = 'inpc_core/regions_form.html'
-    success_url = reverse_lazy('regions_list')
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'inpc_core/product_form.html'
+    success_url = reverse_lazy('product_list')
 
-class RegionsDeleteView(DeleteView):
-    model = Regions
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'inpc_core/product_form.html'
+    success_url = reverse_lazy('product_list')
+
+class ProductDeleteView(DeleteView):
+    model = Product
     template_name = 'inpc_core/confirm_delete.html'
-    success_url = reverse_lazy('regions_list')
+    success_url = reverse_lazy('product_list')
 
-# Vues pour PointsDeVentes
-class PointsDeVentesCreateView(CreateView):
-    model = PointsDeVentes
-    form_class = PointsDeVentesForm
-    template_name = 'inpc_core/pointsdeventes_form.html'
-    success_url = reverse_lazy('pointsdeventes_list')
+# Wilaya Views
+class WilayaListView(ListView):
+    model = Wilaya
+    template_name = 'inpc_core/wilaya_list.html'
+    context_object_name = 'wilayas'
 
-class PointsDeVentesUpdateView(UpdateView):
-    model = PointsDeVentes
-    form_class = PointsDeVentesForm
-    template_name = 'inpc_core/pointsdeventes_form.html'
-    success_url = reverse_lazy('pointsdeventes_list')
+class WilayaCreateView(CreateView):
+    model = Wilaya
+    form_class = WilayaForm
+    template_name = 'inpc_core/wilaya_form.html'
+    success_url = reverse_lazy('wilaya_list')
 
-class PointsDeVentesDeleteView(DeleteView):
-    model = PointsDeVentes
+class WilayaUpdateView(UpdateView):
+    model = Wilaya
+    form_class = WilayaForm
+    template_name = 'inpc_core/wilaya_form.html'
+    success_url = reverse_lazy('wilaya_list')
+
+class WilayaDeleteView(DeleteView):
+    model = Wilaya
     template_name = 'inpc_core/confirm_delete.html'
-    success_url = reverse_lazy('pointsdeventes_list')
+    success_url = reverse_lazy('wilaya_list')
 
-# Vues pour Produits
-class ProduitsCreateView(CreateView):
-    model = Produits
-    form_class = ProduitsForm
-    template_name = 'inpc_core/produits_form.html'
-    success_url = reverse_lazy('produits_list')
+# Moughataa Views
+class MoughataaListView(ListView):
+    model = Moughataa
+    template_name = 'inpc_core/moughataa_list.html'
+    context_object_name = 'moughataa_list'
 
-class ProduitsUpdateView(UpdateView):
-    model = Produits
-    form_class = ProduitsForm
-    template_name = 'inpc_core/produits_form.html'
-    success_url = reverse_lazy('produits_list')
+class MoughataaCreateView(CreateView):
+    model = Moughataa
+    form_class = MoughataaForm
+    template_name = 'inpc_core/moughataa_form.html'
+    success_url = reverse_lazy('moughataa_list')
 
-class ProduitsDeleteView(DeleteView):
-    model = Produits
+class MoughataaUpdateView(UpdateView):
+    model = Moughataa
+    form_class = MoughataaForm
+    template_name = 'inpc_core/moughataa_form.html'
+    success_url = reverse_lazy('moughataa_list')
+
+class MoughataaDeleteView(DeleteView):
+    model = Moughataa
     template_name = 'inpc_core/confirm_delete.html'
-    success_url = reverse_lazy('produits_list')
+    success_url = reverse_lazy('moughataa_list')
 
-# Vues pour Prix
-class PrixCreateView(CreateView):
-    model = Prix
-    form_class = PrixForm
-    template_name = 'inpc_core/prix_form.html'
-    success_url = reverse_lazy('prix_list')
+# Commune Views
+class CommuneListView(ListView):
+    model = Commune
+    template_name = 'inpc_core/commune_list.html'
+    context_object_name = 'communes'
 
-class PrixUpdateView(UpdateView):
-    model = Prix
-    form_class = PrixForm
-    template_name = 'inpc_core/prix_form.html'
-    success_url = reverse_lazy('prix_list')
+class CommuneCreateView(CreateView):
+    model = Commune
+    form_class = CommuneForm
+    template_name = 'inpc_core/commune_form.html'
+    success_url = reverse_lazy('commune_list')
 
-class PrixDeleteView(DeleteView):
-    model = Prix
+class CommuneUpdateView(UpdateView):
+    model = Commune
+    form_class = CommuneForm
+    template_name = 'inpc_core/commune_form.html'
+    success_url = reverse_lazy('commune_list')
+
+class CommuneDeleteView(DeleteView):
+    model = Commune
     template_name = 'inpc_core/confirm_delete.html'
-    success_url = reverse_lazy('prix_list')
+    success_url = reverse_lazy('commune_list')
 
-    
-# Vues génériques pour chaque modèle
-class GroupsProduitsListView(ListView):
-    model = GroupsProduits
-    template_name = 'inpc_core/groupesproduits_list.html'
+# Point of Sale Views
+class PointOfSaleListView(ListView):
+    model = PointOfSale
+    template_name = 'inpc_core/point_of_sale_list.html'
+    context_object_name = 'points_of_sale'
 
-class GroupsProduitsCreateView(CreateView):
-    model = GroupsProduits
-    form_class = GroupsProduitsForm
-    template_name = 'inpc_core/groupesproduits_form.html'
-    success_url = reverse_lazy('groupesproduits_list')
+class PointOfSaleCreateView(CreateView):
+    model = PointOfSale
+    form_class = PointOfSaleForm
+    template_name = 'inpc_core/point_of_sale_form.html'
+    success_url = reverse_lazy('point_of_sale_list')
 
-class RegionsListView(ListView):
-    model = Regions
-    template_name = 'inpc_core/regions_list.html'
+class PointOfSaleUpdateView(UpdateView):
+    model = PointOfSale
+    form_class = PointOfSaleForm
+    template_name = 'inpc_core/point_of_sale_form.html'
+    success_url = reverse_lazy('point_of_sale_list')
 
-class PointsDeVentesListView(ListView):
-    model = PointsDeVentes
-    template_name = 'inpc_core/pointsdeventes_list.html'
+class PointOfSaleDeleteView(DeleteView):
+    model = PointOfSale
+    template_name = 'inpc_core/confirm_delete.html'
+    success_url = reverse_lazy('point_of_sale_list')
 
-class ProduitsListView(ListView):
-    model = Produits
-    template_name = 'inpc_core/produits_list.html'
+# Product Price Views
+class ProductPriceListView(ListView):
+    model = ProductPrice
+    template_name = 'inpc_core/product_price_list.html'
+    context_object_name = 'product_prices'
 
-class PrixListView(ListView):
-    model = Prix
-    template_name = 'inpc_core/prix_list.html'
+class ProductPriceCreateView(CreateView):
+    model = ProductPrice
+    form_class = ProductPriceForm
+    template_name = 'inpc_core/product_price_form.html'
+    success_url = reverse_lazy('product_price_list')
 
+class ProductPriceUpdateView(UpdateView):
+    model = ProductPrice
+    form_class = ProductPriceForm
+    template_name = 'inpc_core/product_price_form.html'
+    success_url = reverse_lazy('product_price_list')
 
+class ProductPriceDeleteView(DeleteView):
+    model = ProductPrice
+    template_name = 'inpc_core/confirm_delete.html'
+    success_url = reverse_lazy('product_price_list')
+
+# Cart Views
+class CartListView(ListView):
+    model = Cart
+    template_name = 'inpc_core/cart_list.html'
+    context_object_name = 'carts'
+
+class CartCreateView(CreateView):
+    model = Cart
+    form_class = CartForm
+    template_name = 'inpc_core/cart_form.html'
+    success_url = reverse_lazy('cart_list')
+
+class CartUpdateView(UpdateView):
+    model = Cart
+    form_class = CartForm
+    template_name = 'inpc_core/cart_form.html'
+    success_url = reverse_lazy('cart_list')
+
+class CartDeleteView(DeleteView):
+    model = Cart
+    template_name = 'inpc_core/confirm_delete.html'
+    success_url = reverse_lazy('cart_list')
+
+# Cart Product Views
+class CartProductListView(ListView):
+    model = CartProduct
+    template_name = 'inpc_core/cart_product_list.html'
+    context_object_name = 'cart_products'
+
+class CartProductCreateView(CreateView):
+    model = CartProduct
+    template_name = 'inpc_core/cart_product_form.html'
+    form_class = CartProductForm
+    success_url = reverse_lazy('cart_product_list')
+
+class CartProductUpdateView(UpdateView):
+    model = CartProduct
+    template_name = 'inpc_core/cart_product_form.html'
+    form_class = CartProductForm
+    success_url = reverse_lazy('cart_product_list')
+
+class CartProductDeleteView(DeleteView):
+    model = CartProduct
+    template_name = 'inpc_core/confirm_delete.html'
+    success_url = reverse_lazy('cart_product_list')
+
+class CartProductDetailView(DetailView):
+    model = CartProduct
+    template_name = 'inpc_core/cart_product_detail.html'
+    context_object_name = 'cart_product'
+
+# INPC Calculation View
+def calculer_inpc(request):
+    # TODO: Implement INPC calculation logic
+    return render(request, 'inpc_core/calculer_inpc.html')
+
+# Home View
 def home(request):
     return render(request, 'inpc_core/home.html')
 
-    
-# Fonction de calcul de l'INPC
-def calculer_inpc(request):
-    # Récupérer tous les prix
-    prix_queryset = Prix.objects.all()
-    
-    # Convertir le queryset en DataFrame pandas
-    prix_data = list(prix_queryset.values(
-        'produit__nom_produit', 
-        'produit__groupe_produit__nom_group',
-        'produit__ponderation', 
-        'prix', 
-        'annee', 
-        'mois'
-    ))
-    
-    df = pd.DataFrame(prix_data)
-    
-    # Convertir les colonnes prix et ponderation en float
-    df['prix'] = df['prix'].astype(float)
-    df['produit__ponderation'] = df['produit__ponderation'].astype(float)
-    
-    # Grouper par année, mois et groupe de produits
-    grouped = df.groupby(['annee', 'mois', 'produit__groupe_produit__nom_group'])
-    
-    # Calculer l'INPC par groupe de produits
-    inpc_par_groupe = grouped.apply(lambda x: np.average(
-        x['prix'], 
-        weights=x['produit__ponderation']
-    )).reset_index()
-    
-    # Renommer les colonnes pour plus de clarté
-    inpc_par_groupe.columns = ['Année', 'Mois', 'Groupe', 'INPC']
-    
-    # Calculer l'INPC global
-    inpc_global = inpc_par_groupe.groupby(['Année', 'Mois'])['INPC'].mean()
-    
-    context = {
-        'inpc_par_groupe': inpc_par_groupe.to_dict('records'),
-        'inpc_global': inpc_global.to_dict()
-    }
-    
-    return render(request, 'inpc_core/calculer_inpc.html', context)
-
-
-
+import pandas as pd
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.views.generic import FormView
+from .forms import ExcelImportForm
+from .models import (
+    ProductType, Product, Wilaya, Moughataa, 
+    Commune, PointOfSale, ProductPrice, Cart, CartProduct 
+)
+from datetime import datetime
 
 class ExcelImportView(FormView):
     template_name = 'inpc_core/excel_import.html'
     form_class = ExcelImportForm
-    success_url = '/import/'
+    success_url = '/inpc/import/'
 
     def form_valid(self, form):
-        excel_file = form.cleaned_data['excel_file']
-        
+        uploaded_file = form.cleaned_data['file']
+        model_type = form.cleaned_data['model_type']
+
         try:
-            # Lire le fichier Excel
-            df = pd.read_excel(excel_file)
+            # Read Excel file
+            df = pd.read_excel(uploaded_file)
             
-            # Importer les données selon le type de fichier
-            file_type = form.cleaned_data['file_type']
-            
-            if file_type == 'groupes_produits':
-                self.import_groupes_produits(df)
-            elif file_type == 'regions':
-                self.import_regions(df)
-            elif file_type == 'points_vente':
-                self.import_points_vente(df)
-            elif file_type == 'produits':
-                self.import_produits(df)
-            elif file_type == 'prix':
-                self.import_prix(df)
-            
-            messages.success(self.request, 'Importation réussie !')
+            # Import based on model type
+            import_methods = {
+                'product_type': self.import_product_types,
+                'product': self.import_products,
+                'wilaya': self.import_wilayas,
+                'moughataa': self.import_moughataa,
+                'commune': self.import_communes,
+                'point_of_sale': self.import_points_of_sale,
+                'product_price': self.import_product_prices,
+                'cart': self.import_carts,
+                'cart_product': self.import_cart_products
+            }
+
+            import_method = import_methods.get(model_type)
+            if import_method:
+                import_method(df)
+                messages.success(self.request, f'Importation de {model_type} réussie!')
+            else:
+                messages.error(self.request, 'Type de modèle non reconnu')
+
         except Exception as e:
-            messages.error(self.request, f'Erreur lors de l\'importation : {str(e)}')
-        
+            messages.error(self.request, f'Erreur lors de l\'importation: {str(e)}')
+
         return super().form_valid(form)
 
-    def import_groupes_produits(self, df):
+    def import_product_types(self, df):
         for _, row in df.iterrows():
-            GroupsProduits.objects.get_or_create(
-                nom_group=row['nom_group']
+            ProductType.objects.create(
+                code=row['code'],
+                label=row['label']
             )
 
-    def import_regions(self, df):
+    def import_products(self, df):
         for _, row in df.iterrows():
-            Regions.objects.get_or_create(
-                nom_region=row['nom_region']
+            product_type = ProductType.objects.get(code=row['product_type'])
+            Product.objects.create(
+                code=row['code'],
+                name=row['name'],
+                description=row['description'],
+                unit_measure=row['unit_measure'],
+                product_type=product_type
+            )
+        
+
+    def import_wilayas(self, df):
+        for _, row in df.iterrows():
+            Wilaya.objects.create(
+                code=row['code'],
+                name=row['name']
+            )
+    
+    def import_moughataa(self, df):
+        for _, row in df.iterrows():
+            wilaya = Wilaya.objects.get(code=row['wilaya_code'])
+            Moughataa.objects.create(
+                code=row['code'],
+                label=row['label'],
+                wilaya=wilaya
+            )
+    
+    def import_communes(self, df):
+        for _, row in df.iterrows():
+            moughataa = Moughataa.objects.get(code=row['moughataa_code'])
+            Commune.objects.create(
+                code=row['code'],
+                name=row['name'],
+                moughataa=moughataa
+            )
+    
+    def import_points_of_sale(self, df):
+        for _, row in df.iterrows():
+            commune = Commune.objects.get(code=row['commune_code'])
+            PointOfSale.objects.create(
+                code=row['code'],
+                type=row['type'],
+                gps_lat=row.get('gps_lat', None),
+                gps_lon=row.get('gps_lon', None),
+                commune=commune
+            )
+    
+    def import_product_prices(self, df):
+        for _, row in df.iterrows():
+            product = Product.objects.get(code=row['product_code'])
+            point_of_sale = PointOfSale.objects.get(code=row['point_of_sale_code'])
+            ProductPrice.objects.create(
+                product=product,
+                point_of_sale=point_of_sale,
+                value=row['value'],
+                date_from=row['date_from'],
+                date_to=row.get('date_to', None)
+            )
+    
+    def import_carts(self, df):
+        for _, row in df.iterrows():
+            Cart.objects.create(
+                code=row['code'],
+                name=row['name'],
+                description=row.get('description', '')
+            )
+    
+    def import_cart_products(self, df):
+        for _, row in df.iterrows():
+            cart = Cart.objects.get(code=row['cart_code'])
+            product = Product.objects.get(code=row['product_code'])
+            CartProduct.objects.create(
+                cart=cart,
+                product=product,
+                weighting=row['weighting'],
+                date_from=row.get('date_from', datetime.now().date()),
+                date_to=row.get('date_to', None)
             )
 
-    def import_points_vente(self, df):
-        for _, row in df.iterrows():
-            region = Regions.objects.get(nom_region=row['region'])
-            PointsDeVentes.objects.get_or_create(
-                nom_point=row['nom_point'],
-                region=region,
-                longitude=row.get('longitude'),
-                latitude=row.get('latitude')
-            )
-
-    def import_produits(self, df):
-        for _, row in df.iterrows():
-            groupe = GroupsProduits.objects.get(nom_group=row['groupe_produit'])
-            Produits.objects.get_or_create(
-                nom_produit=row['nom_produit'],
-                groupe_produit=groupe,
-                ponderation=row['ponderation']
-            )
-
-    def import_prix(self, df):
-        for _, row in df.iterrows():
-            produit = Produits.objects.get(nom_produit=row['produit'])
-            points_vente = PointsDeVentes.objects.filter(
-                nom_point__in=row['points_de_vente'].split(',')
-            )
-            
-            prix = Prix.objects.create(
-                produit=produit,
-                prix=row['prix'],
-                annee=row['annee'],
-                mois=row['mois']
-            )
-            prix.points_de_vente.set(points_vente)
