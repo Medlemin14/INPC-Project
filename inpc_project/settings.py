@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
-    'inpc_core'
+    'inpc_core',
+    'django_filters',
     
 
 ]
@@ -131,6 +132,11 @@ STATIC_URL = 'static/'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Add static file directories
+STATICFILES_DIRS = [
+    BASE_DIR /'inpc_core'/'static',
+]
+
 # Media files
 MEDIA_URL = '/media/'
 
@@ -146,3 +152,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = 'login'  # URL de la page de connexion
+LOGIN_REDIRECT_URL = 'home'  # Redirige vers la page d'accueil après la connexion
+LOGOUT_REDIRECT_URL = 'login'  # Redirige vers la page de connexion après la déconnexion

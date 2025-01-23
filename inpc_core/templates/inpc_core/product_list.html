@@ -5,7 +5,13 @@
     <div class="col-md-10">
         <h2>Produits</h2>
         <a href="{% url 'product_create' %}" class="btn btn-primary mb-3">Ajouter un Produit</a>
-        
+
+        <!-- Formulaire de filtre -->
+        <form method="get" class="mb-4">
+            {{ filter.form.as_p }}
+            <button type="submit" class="btn btn-primary">Filtrer</button>
+        </form>
+
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -16,7 +22,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for object in object_list %}
+                {% for object in filter.qs %}
                 <tr>
                     <td>{{ object.name }}</td>
                     <td>{{ object.product_type }}</td>

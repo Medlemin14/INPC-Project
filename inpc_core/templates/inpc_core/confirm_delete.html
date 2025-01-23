@@ -1,17 +1,17 @@
 {% extends 'inpc_core/base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header bg-danger text-white">
-                    Confirmation de suppression
+                <div class="card-header">
+                    <h2>Confirmer la Suppression</h2>
                 </div>
                 <div class="card-body">
-                    <p>Êtes-vous sûr de vouloir supprimer "{{ object }}" ?</p>
                     <form method="post">
                         {% csrf_token %}
+                        <p>Êtes-vous sûr de vouloir supprimer "{{ object }}" ?</p>
                         <button type="submit" class="btn btn-danger">Confirmer</button>
                         <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Annuler</a>
                     </form>

@@ -1,0 +1,21 @@
+{% extends "inpc_core/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Déconnexion</h4>
+                </div>
+                <div class="card-body">
+                    <p>Vous avez été déconnecté avec succès.</p>
+                    <a href="{% url 'login' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i>Se reconnecter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

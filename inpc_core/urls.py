@@ -1,5 +1,18 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from . import views
+from .views import (
+    ProductTypeListView, ProductTypeCreateView, ProductTypeUpdateView, ProductTypeDeleteView,
+    ProductListView, ProductCreateView, ProductUpdateView, ProductDeleteView,
+    WilayaListView, WilayaCreateView, WilayaUpdateView, WilayaDeleteView,
+    MoughataaListView, MoughataaCreateView, MoughataaUpdateView, MoughataaDeleteView,
+    CommuneListView, CommuneCreateView, CommuneUpdateView, CommuneDeleteView,
+    PointOfSaleListView, PointOfSaleCreateView, PointOfSaleUpdateView, PointOfSaleDeleteView,
+    ProductPriceListView, ProductPriceCreateView, ProductPriceUpdateView, ProductPriceDeleteView,
+    CartListView, CartCreateView, CartUpdateView, CartDeleteView,
+    CartProductListView, CartProductCreateView, CartProductUpdateView, CartProductDeleteView,
+    ExcelImportView
+)
 
 urlpatterns = [
     # Product Type URLs
@@ -53,7 +66,7 @@ urlpatterns = [
     # Cart Product URLs
     path('cart-product/', views.CartProductListView.as_view(), name='cart_product_list'),
     path('cart-product/create/', views.CartProductCreateView.as_view(), name='cart_product_create'),
-    path('cart-product/<int:pk>/', views.CartProductDetailView.as_view(), name='cart_product_detail'),
+    path('cart-product/<int:pk>/detail/', views.CartProductDetailView.as_view(), name='cart_product_detail'),
     path('cart-product/<int:pk>/update/', views.CartProductUpdateView.as_view(), name='cart_product_update'),
     path('cart-product/<int:pk>/delete/', views.CartProductDeleteView.as_view(), name='cart_product_delete'),
     # URL pour le calcul de l'INPC
@@ -61,4 +74,10 @@ urlpatterns = [
 
     # URL pour l'importation Excel
     path('import/', views.ExcelImportView.as_view(), name='excel_import'),
+    path('login/', auth_views.LoginView.as_view(template_name='inpc_core/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='inpc_core/logout.html'), name='logout'),
+    path('password-reset/', auth_views.PasswordResetView.as_view(template_name='inpc_core/password_reset.html'), name='password_reset'),
+    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='inpc_core/password_reset_done.html'), name='password_reset_done'),
+    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='inpc_core/password_reset_confirm.html'), name='password_reset_confirm'),
+    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='inpc_core/password_reset_complete.html'), name='password_reset_complete'),
 ]

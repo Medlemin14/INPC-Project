@@ -6,6 +6,37 @@
         <h1 class="display-4">Système de Calcul de l'INPC</h1>
         <p class="lead">Bienvenue sur l'application de calcul de l'Indice National des Prix à la Consommation</p>
         
+        <!-- Section INPC des derniers mois -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">INPC des derniers mois</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Année</th>
+                                    <th>Mois</th>
+                                    <th>INPC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in inpc_data %}
+                                <tr>
+                                    <td>{{ data.year }}</td>
+                                    <td>{{ data.month }}</td>
+                                    <td>{{ data.inpc|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-4">
             <div class="col-md-4">
                 <div class="card mb-4">
