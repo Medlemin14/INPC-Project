@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-9qfx(zkdd#w8dlv!ggkfp0zh*#wu#^hj8ab*z&z46c4rvt8x*d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '23014']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': os.environ.get('DB_NAME', 'inpc_db'),
         'USER': os.environ.get('DB_USER', 'root'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'Medlemin23014'),
-        'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
+        'HOST': os.environ.get('DATABASE_HOST', 'inpc_mysql_23014'),
         'PORT': os.environ.get('DATABASE_PORT', '24014'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
@@ -156,3 +156,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'  # URL de la page de connexion
 LOGIN_REDIRECT_URL = 'home'  # Redirige vers la page d'accueil après la connexion
 LOGOUT_REDIRECT_URL = 'login'  # Redirige vers la page de connexion après la déconnexion
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://138.201.52.29:25014',
+    'https://138.201.52.29:25014',
+]

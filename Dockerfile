@@ -24,5 +24,14 @@ RUN pip install --upgrade pip \
 # Copy project files
 COPY . /app/
 
+# Create static and media directories
+RUN mkdir -p /app/staticfiles /app/media
+
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
 # Expose port
 EXPOSE 23014
+
+# Use Django's built-in development server to serve the application
+CMD ["python", "manage.py", "runserver", "0.0.0.0:23014"]

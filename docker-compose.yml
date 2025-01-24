@@ -1,9 +1,9 @@
-
+version: '3.8'
 
 services:
-  db:
+  inpc_mysql_23014:
     image: mysql:8.0
-    container_name: inpc_mysql
+    container_name: inpc_mysql_23014
     environment:
       MYSQL_ROOT_PASSWORD: Medlemin23014
       MYSQL_DATABASE: inpc_db
@@ -13,30 +13,33 @@ services:
       - mysql_data:/var/lib/mysql
     command: --sql_mode=STRICT_TRANS_TABLES
 
-  djangoapp:
+  inpc_django_23014:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name: inpc_django
+    container_name: inpc_django_23014
     command: >
       sh -c "python manage.py makemigrations &&
             python manage.py migrate &&
+            python manage.py collectstatic --noinput &&
             python manage.py runserver 0.0.0.0:23014"
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
+      - media_volume:/app/media
     ports:
       - "23014:23014"
     depends_on:
-      - db
+      - inpc_mysql_23014
     environment:
       - DJANGO_SETTINGS_MODULE=inpc_project.settings
       - DB_NAME=inpc_db
       - DB_USER=root
       - DB_PASSWORD=Medlemin23014
-      - DATABASE_HOST=db
+      - DATABASE_HOST=inpc_mysql_23014
       - DATABASE_PORT=3306
 
 volumes:
   mysql_data:
   static_volume:
+  media_volume:

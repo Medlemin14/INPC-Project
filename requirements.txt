@@ -9,6 +9,5 @@ sqlparse==0.4.4
 asgiref==3.7.2
 django-crispy-forms==2.1
 crispy-bootstrap5==2024.2
-gunicorn==21.2.0
 numpy==1.26.3
 django-filter
