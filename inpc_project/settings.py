@@ -160,4 +160,5 @@ LOGOUT_REDIRECT_URL = 'login'  # Redirige vers la page de connexion apr√®s la d√
 CSRF_TRUSTED_ORIGINS = [
     'http://138.201.52.29:25014',
     'https://138.201.52.29:25014',
+    'http://teaching.sidi.xyz:25014'
 ]

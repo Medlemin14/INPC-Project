@@ -10,25 +10,22 @@
                     <h2>Importation de Données</h2>
                 </div>
                 <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
+                    <form method="post" enctype="multipart/form-data" id="import-export-form">
                         {% csrf_token %}
                         {{ form|crispy }}
                         <div class="alert alert-info mt-3">
                             <strong>Instructions d'Importation:</strong>
                             <ul>
-                                <li>Choisissez le type de données à importer</li>
-                                <li>Sélectionnez un fichier Excel (.xlsx ou .xls)</li>
-                                <li>Assurez-vous que le fichier respecte le format requis</li>
-                                <li>Les colonnes doivent correspondre exactement aux champs du modèle</li>
-                                <li>La première ligne doit contenir les en-têtes des colonnes</li>
+                                <li>Assurez-vous que le fichier Excel correspond au type de données sélectionné</li>
+                                <li>Les colonnes doivent correspondre aux champs du modèle</li>
                             </ul>
-                            <p class="mb-0">
-                                <a href="#" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#importFormatModal">
-                                    Voir les Formats d'Importation
-                                </a>
-                            </p>
                         </div>
-                        <button type="submit" class="btn btn-primary">Importer</button>
+                        <div class="text-center">
+                            <a href="#" class="btn btn-secondary mr-2">
+                                Télécharger Modèle
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">Importer</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -84,4 +81,25 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const operationSelect = document.getElementById('id_operation');
+    const submitBtn = document.getElementById('submit-btn');
+
+    function updateFormDisplay() {
+        if (operationSelect.value === 'import') {
+            submitBtn.textContent = 'Importer';
+        } else {
+            submitBtn.textContent = 'Exporter';
+        }
+    }
+
+    // Initial setup
+    updateFormDisplay();
+
+    // Add event listener for changes
+    operationSelect.addEventListener('change', updateFormDisplay);
+});
+</script>
 {% endblock %}

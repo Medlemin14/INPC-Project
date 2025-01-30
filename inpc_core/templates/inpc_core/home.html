@@ -6,6 +6,45 @@
         <h1 class="display-4">Système de Calcul de l'INPC</h1>
         <p class="lead">Bienvenue sur l'application de calcul de l'Indice National des Prix à la Consommation</p>
         
+        <!-- Section des graphiques -->
+        <div class="row mt-4">
+            <!-- Line Chart - Évolution de l'INPC -->
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Évolution de l'INPC sur les 6 derniers mois</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="inpcLineChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pie Chart - Répartition des types de produits -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Répartition des Types de Produits</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="productTypesPieChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bar Chart - Prix moyens par wilaya -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Prix Moyens par Wilaya</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="wilayaPricesBarChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Section INPC des derniers mois -->
         <div class="row mt-4">
             <div class="col-12">
@@ -73,4 +112,90 @@
         </div>
     </div>
 </div>
+
+<!-- Inclure Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Scripts pour les graphiques -->
+<script>
+    // Configuration des graphiques
+    document.addEventListener('DOMContentLoaded', function() {
+        // Line Chart - Évolution de l'INPC
+        const ctxLine = document.getElementById('inpcLineChart').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: {{ labels_mois|safe }},
+                datasets: [{
+                    label: 'INPC',
+                    data: {{ valeurs_inpc|safe }},
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+        // Pie Chart - Répartition des types de produits
+        const ctxPie = document.getElementById('productTypesPieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: {{ pie_labels|safe }},
+                datasets: [{
+                    data: {{ pie_data|safe }},
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(153, 102, 255)',
+                        'rgb(255, 159, 64)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // Bar Chart - Prix moyens par wilaya
+        const ctxBar = document.getElementById('wilayaPricesBarChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: {{ bar_labels|safe }},
+                datasets: [{
+                    label: 'Prix Moyen',
+                    data: {{ bar_data|safe }},
+                    backgroundColor: 'rgb(54, 162, 235)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
