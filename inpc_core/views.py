@@ -6,7 +6,7 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.contrib import messages
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Q  # Added Q here
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
@@ -363,6 +363,9 @@ def calculer_inpc(request):
     Calcule l'Indice National des Prix à la Consommation (INPC)
     avec possibilité de sélectionner l'année et le mois
     """
+    from datetime import datetime
+    from django.db.models import Avg, Count, F, Q
+    
     # Année de base
     ANNEE_BASE = 2019
     
@@ -411,25 +414,22 @@ def calculer_inpc(request):
                 date_from__month=mois_courant
             ).order_by('-date_from').first()
             
-            # Récupérer le poids du produit dans les paniers
-            cart_products = CartProduct.objects.filter(
-                product=produit,
-                date_from__year__lte=annee_courante,
-                date_to__year__gte=annee_courante
-            )
+            # Poids du produit - utiliser uniquement les pondérations de 2019
+            annee_base_debut = datetime(2019, 1, 1)
+            annee_base_fin = datetime(2019, 12, 31)
             
-            # Vérifier que tous les éléments nécessaires sont présents
-            if prix_base and prix_courant and cart_products:
-                poids_moyen = cart_products.aggregate(
-                    models.Avg('weighting')
-                )['weighting__avg'] or 0
-                
-                # Ajouter au total uniquement si le poids est significatif
-                if poids_moyen > 0:
-                    prix_total_base += prix_base.value * poids_moyen
-                    prix_total_courant += prix_courant.value * poids_moyen
-                    poids_total += poids_moyen
-                    produits_calcules += 1
+            poids = CartProduct.objects.filter(
+                product=produit,
+                date_from__lte=annee_base_fin,
+                date_to__gte=annee_base_debut
+            ).aggregate(Avg('weighting'))['weighting__avg'] or 0
+            
+            if prix_base and prix_courant and poids > 0:
+                indice_produit = (prix_courant.value / prix_base.value) * 100
+                prix_total_base += prix_base.value * poids
+                prix_total_courant += prix_courant.value * poids
+                poids_total += poids
+                produits_calcules += 1
         
         # Calculer l'INPC pour ce groupe de produits
         # INPC = (Prix courant / Prix base) * 100
@@ -490,83 +490,132 @@ def home(request):
     labels_mois = []
     valeurs_inpc = []
     
+    # Calculer les dates des 6 derniers mois
+    mois_a_calculer = []
+    date_temp = current_date.replace(day=1)
+    
     for i in range(6):
-        # Calculer la date du mois précédent
-        month_date = current_date - timedelta(days=30 * i)
-        annee_courante = month_date.year
-        mois_courant = month_date.month
+        mois_a_calculer.append((date_temp.year, date_temp.month))
+        if date_temp.month == 1:
+            date_temp = date_temp.replace(year=date_temp.year - 1, month=12)
+        else:
+            date_temp = date_temp.replace(month=date_temp.month - 1)
+    
+    # Inverser la liste pour avoir l'ordre chronologique
+    mois_a_calculer.reverse()
+    
+    for annee_courante, mois_courant in mois_a_calculer:
+        print(f"\n=== Calcul pour {mois_courant}/{annee_courante} ===")
+        
+        # Créer les dates de début et fin du mois courant
+        date_debut_mois_courant = datetime(annee_courante, mois_courant, 1)
+        if mois_courant == 12:
+            date_fin_mois_courant = datetime(annee_courante + 1, 1, 1) - timedelta(days=1)
+        else:
+            date_fin_mois_courant = datetime(annee_courante, mois_courant + 1, 1) - timedelta(days=1)
+            
+        # Créer les dates de début et fin du mois de l'année de base
+        date_debut_mois_base = datetime(ANNEE_BASE, mois_courant, 1)
+        if mois_courant == 12:
+            date_fin_mois_base = datetime(ANNEE_BASE + 1, 1, 1) - timedelta(days=1)
+        else:
+            date_fin_mois_base = datetime(ANNEE_BASE, mois_courant + 1, 1) - timedelta(days=1)
+        
+        print(f"Période base: {date_debut_mois_base.date()} à {date_fin_mois_base.date()}")
+        print(f"Période courante: {date_debut_mois_courant.date()} à {date_fin_mois_courant.date()}")
+        
+        # Vérifier les prix disponibles
+        prix_base_count = ProductPrice.objects.filter(
+            date_from__lte=date_fin_mois_base,
+            date_to__gte=date_debut_mois_base
+        ).count()
+        
+        prix_courant_count = ProductPrice.objects.filter(
+            date_from__lte=date_fin_mois_courant,
+            date_to__gte=date_debut_mois_courant
+        ).count()
+        
+        print(f"Nombre de prix pour la période de base: {prix_base_count}")
+        print(f"Nombre de prix pour la période courante: {prix_courant_count}")
         
         # Récupérer tous les types de produits (catégories COICOP)
         types_produits = ProductType.objects.all()
         
-        # Calculer l'INPC global pour ce mois
+        # Variables pour le calcul de l'INPC
         inpc_total = 0
-        groupes_calcules = 0
+        poids_global_total = 0
         
         for type_produit in types_produits:
-            # Récupérer les produits de ce type
             produits = Product.objects.filter(product_type=type_produit)
+            somme_indices = 0
+            nombre_produits_valides = 0
+            poids_groupe_total = 0
             
-            # Variables pour stocker les totaux
-            prix_total_base = 0
-            prix_total_courant = 0
-            poids_total = 0
-            produits_calcules = 0
+            print(f"\nGroupe {type_produit.code}:")
             
             for produit in produits:
-                # Récupérer les prix pour l'année de base
+                # Prix moyen pour l'année de base
                 prix_base = ProductPrice.objects.filter(
                     product=produit,
-                    date_from__year=ANNEE_BASE,
-                    date_from__month=mois_courant
-                ).order_by('-date_from').first()
+                    date_from__lte=date_fin_mois_base,
+                    date_to__gte=date_debut_mois_base
+                ).aggregate(Avg('value'))['value__avg']
                 
-                # Récupérer les prix pour l'année courante
+                # Prix moyen pour la période courante
                 prix_courant = ProductPrice.objects.filter(
                     product=produit,
-                    date_from__year=annee_courante,
-                    date_from__month=mois_courant
-                ).order_by('-date_from').first()
+                    date_from__lte=date_fin_mois_courant,
+                    date_to__gte=date_debut_mois_courant
+                ).aggregate(Avg('value'))['value__avg']
                 
-                # Récupérer le poids du produit dans les paniers
-                cart_products = CartProduct.objects.filter(
+                # Poids du produit - utiliser uniquement les pondérations de 2019
+                annee_base_debut = datetime(2019, 1, 1)
+                annee_base_fin = datetime(2019, 12, 31)
+                
+                poids = CartProduct.objects.filter(
                     product=produit,
-                    date_from__year__lte=annee_courante,
-                    date_to__year__gte=annee_courante
-                )
+                    date_from__lte=annee_base_fin,
+                    date_to__gte=annee_base_debut
+                ).aggregate(Avg('weighting'))['weighting__avg'] or 0
                 
-                # Vérifier que tous les éléments nécessaires sont présents
-                if prix_base and prix_courant and cart_products:
-                    poids_moyen = cart_products.aggregate(
-                        models.Avg('weighting')
-                    )['weighting__avg'] or 0
-                    
-                    # Ajouter au total uniquement si le poids est significatif
-                    if poids_moyen > 0:
-                        prix_total_base += prix_base.value * poids_moyen
-                        prix_total_courant += prix_courant.value * poids_moyen
-                        poids_total += poids_moyen
-                        produits_calcules += 1
+                if prix_base and prix_courant and poids > 0:
+                    indice_produit = (prix_courant / prix_base) * 100
+                    somme_indices += indice_produit * poids
+                    poids_groupe_total += poids
+                    nombre_produits_valides += 1
+                    print(f"  Produit {produit.code}: Base={prix_base:.2f}, Courant={prix_courant:.2f}, Poids={poids:.2f}")
+                else:
+                    print(f"  Produit {produit.code}: INVALIDE - Base={prix_base}, Courant={prix_courant}, Poids={poids}")
             
-            # Calculer l'INPC pour ce groupe de produits
-            if prix_total_base > 0 and produits_calcules > 0:
-                inpc_groupe = (prix_total_courant / prix_total_base * 100)
-                inpc_total += inpc_groupe
-                groupes_calcules += 1
+            print(f"  Total produits valides: {nombre_produits_valides}")
+            print(f"  Poids total du groupe: {poids_groupe_total}")
+            
+            # Calculer l'indice du groupe si des données valides existent
+            if nombre_produits_valides > 0 and poids_groupe_total > 0:
+                indice_groupe = somme_indices / poids_groupe_total
+                inpc_total += indice_groupe * (poids_groupe_total / 100)
+                poids_global_total += poids_groupe_total
+                print(f"  Indice du groupe: {indice_groupe:.2f}")
+            else:
+                print("  Pas de données valides pour ce groupe")
         
-        # Calculer l'INPC global
-        inpc_global = inpc_total / groupes_calcules if groupes_calcules > 0 else 0
+        # Calculer l'INPC final
+        inpc_global = inpc_total * (100 / poids_global_total) if poids_global_total > 0 else 0
+        
+        # Formater la date pour l'affichage
+        month_name = date_debut_mois_courant.strftime('%B %Y')
         
         # Ajouter les résultats à la liste
         inpc_data.append({
             'year': annee_courante,
             'month': mois_courant,
-            'inpc': inpc_global
+            'month_name': month_name,
+            'inpc': round(inpc_global, 2)
         })
         
-        # Ajouter les données pour le graphique en ligne
-        labels_mois.append(f"{mois_courant}/{annee_courante}")
-        valeurs_inpc.append(inpc_global)
+        # Ajouter les données pour les graphiques
+        labels_mois.append(month_name)
+        valeurs_inpc.append(round(inpc_global, 2))
     
     # Données pour le graphique circulaire (répartition des types de produits)
     product_types_data = ProductType.objects.annotate(
@@ -576,10 +625,6 @@ def home(request):
     pie_labels = [item['label'] for item in product_types_data]
     pie_data = [item['product_count'] for item in product_types_data]
     
-    print("Données du graphique circulaire:")
-    print("Labels:", pie_labels)
-    print("Data:", pie_data)
-    
     # Données pour le graphique en barres (prix moyens par wilaya)
     wilayas_data = Wilaya.objects.annotate(
         avg_price=Avg('moughataa_set__commune_set__points_of_sale__product_prices__value')
@@ -587,14 +632,6 @@ def home(request):
     
     bar_labels = [item['name'] for item in wilayas_data]
     bar_data = [float(item['avg_price'] or 0) for item in wilayas_data]
-    
-    print("\nDonnées du graphique en barres:")
-    print("Labels:", bar_labels)
-    print("Data:", bar_data)
-    
-    print("\nDonnées INPC:")
-    print("Labels mois:", labels_mois)
-    print("Valeurs INPC:", valeurs_inpc)
     
     # Convertir les données en JSON pour le template
     from django.core.serializers.json import DjangoJSONEncoder
@@ -626,6 +663,27 @@ from .models import (
 )
 from datetime import datetime
 import io
+
+def cleanup_old_prices():
+    """
+    Nettoie les anciennes données de prix en ne gardant que:
+    - Toutes les données de 2019 (année de base)
+    - Les données des 13 derniers mois pour les autres années
+    """
+    from datetime import datetime, timedelta
+    
+    # Conserver toutes les données de 2019 (année de base)
+    base_year = 2019
+    
+    # Calculer la date limite pour les données récentes (13 derniers mois)
+    current_date = datetime.now()
+    retention_limit = current_date - timedelta(days=396)  # ~13 months
+    
+    # Supprimer les prix anciens sauf ceux de 2019
+    ProductPrice.objects.filter(
+        ~Q(date_from__year=base_year),  # Exclure l'année de base
+        date_from__lt=retention_limit,   # Garder seulement les 13 derniers mois
+    ).delete()
 
 class ExcelImportView(LoginRequiredMixin, FormView):
     template_name = 'inpc_core/excel_import.html'
@@ -806,25 +864,32 @@ class ExcelImportView(LoginRequiredMixin, FormView):
         return {'errors': errors}
 
     def import_product_prices(self, df):
-        errors = []
-        for _, row in df.iterrows():
-            try:
-                product = Product.objects.get(code=row['product_code'])
-                point_of_sale = PointOfSale.objects.get(code=row['point_of_sale_code'])
-                ProductPrice.objects.create(
-                    value=row['value'],
-                    date_from=row['date_from'],
-                    date_to=row['date_to'],
-                    product=product,
-                    point_of_sale=point_of_sale
-                )
-            except Product.DoesNotExist:
-                errors.append(f"Erreur: Produit {row['product_code']} non trouvé")
-            except PointOfSale.DoesNotExist:
-                errors.append(f"Erreur: Point de vente {row['point_of_sale_code']} non trouvé")
-            except Exception as e:
-                errors.append(f"Erreur: {str(e)}")
-        return {'errors': errors}
+        try:
+            # Nettoyer les anciennes données avant l'import
+            cleanup_old_prices()
+            
+            # Continuer avec l'import normal
+            errors = []
+            for _, row in df.iterrows():
+                try:
+                    product = Product.objects.get(code=row['product_code'])
+                    point_of_sale = PointOfSale.objects.get(code=row['point_of_sale_code'])
+                    ProductPrice.objects.create(
+                        value=row['value'],
+                        date_from=row['date_from'],
+                        date_to=row['date_to'],
+                        product=product,
+                        point_of_sale=point_of_sale
+                    )
+                except Product.DoesNotExist:
+                    errors.append(f"Erreur: Produit {row['product_code']} non trouvé")
+                except PointOfSale.DoesNotExist:
+                    errors.append(f"Erreur: Point de vente {row['point_of_sale_code']} non trouvé")
+                except Exception as e:
+                    errors.append(f"Erreur: {str(e)}")
+            return {'errors': errors}
+        except Exception as e:
+            messages.error(self.request, f"Erreur lors de l'import des prix: {str(e)}")
 
     def import_carts(self, df):
         errors = []

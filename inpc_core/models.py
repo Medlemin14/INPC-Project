@@ -82,7 +82,7 @@ class CartProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cart_products')
     weighting = models.DecimalField(
         max_digits=5, 
-        decimal_places=2, 
+        decimal_places=2,   
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         help_text="Pondération du produit dans le panier (en %)"
     )
